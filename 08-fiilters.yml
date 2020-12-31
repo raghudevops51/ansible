@@ -1,0 +1,9 @@
+- name: demo on filters
+  hosts: localhost
+  vars:
+    URL: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+  tasks:
+    - name: Print
+      debug:
+        msg: "{{URL.split('/') | last | regex_replace('.tar.gz', '') }}"
+

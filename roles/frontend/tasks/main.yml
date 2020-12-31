@@ -1,0 +1,53 @@
+- name: Install Nginx
+  yum:
+    name: nginx
+    state: latest
+
+- name: Include AZ CLI Installation Steps
+  include_role:
+    name: common
+    tasks_from: az-cli-setup
+
+- name: Remove old htdocs
+  file:
+    path: "{{ARTIFACT_PATH}}"
+    state: absent
+
+- name: Create HtDocs Directory
+  file:
+    path: "{{ARTIFACT_PATH}}"
+    state: directory
+
+- name: Include Artifact Download Steps
+  include_role:
+    name: common
+    tasks_from: artifact-download
+  vars:
+    component_id: c17da1ba-0ca3-4bce-8de5-97e744fc0eaa
+
+- name: Update Nginx Configuration
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: Restart NGINX
+
+- name: Start Nginx Service
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+  ignore_errors: yes
+
+- name: Include Prometheus Role
+  include_role:
+    name: prometheus
+
+- name: Include Filebeat Role
+  include_role:
+    name: filebeat
+  vars:
+    LOG_FILE: /var/log/nginx/access.log
+    EXCLUDE_LINES: nginx
+    IS_STRUCTURED: false
+    APPNAME: frontend
+

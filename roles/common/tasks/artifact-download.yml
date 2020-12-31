@@ -1,0 +1,36 @@
+- name: Grab Version for Dev
+  shell: curl -s https://feeds.dev.azure.com/DevOps-Batches/ce99914a-0f7d-4c46-9ccc-e4d025115ea9/_apis/Packaging/Feeds/f0174cff-2623-4600-a29f-0eb8a06b0a0c/Packages/{{component_id}}/versions?api-version=6.0-preview.1 | jq '.value[] | .version +" " + .views[].name' | grep Local | head -1 | xargs | awk '{print $1}'
+  when: ENV == "dev"
+  register: dev
+
+- name: Grab Version for PreProd
+  shell: curl -s https://feeds.dev.azure.com/DevOps-Batches/ce99914a-0f7d-4c46-9ccc-e4d025115ea9/_apis/Packaging/Feeds/f0174cff-2623-4600-a29f-0eb8a06b0a0c/Packages/{{component_id}}/versions?api-version=6.0-preview.1 | jq '.value[] | .version +" " + .views[].name' | grep Prerelease | head -1 | xargs | awk '{print $1}'
+  when: ENV == "qa"
+  register: qa
+
+- name: Grab Version for PROD
+  shell: curl -s https://feeds.dev.azure.com/DevOps-Batches/ce99914a-0f7d-4c46-9ccc-e4d025115ea9/_apis/Packaging/Feeds/f0174cff-2623-4600-a29f-0eb8a06b0a0c/Packages/{{component_id}}/versions?api-version=6.0-preview.1 | jq '.value[] | .version +" " + .views[].name' | grep Release | head -1 | xargs | awk '{print $1}'
+  when: ENV == "prod"
+  register: prod
+
+- name: Declare Version
+  set_fact:
+    VERSION: "{{dev.stdout}}"
+  when: ENV == "dev"
+
+- name: Declare Version
+  set_fact:
+    VERSION: "{{qa.stdout}}"
+  when: ENV == "qa"
+
+- name: Declare Version
+  set_fact:
+    VERSION: "{{prod.stdout}}"
+  when: ENV == "prod"
+
+- name: Print Versionb
+  debug:
+    msg: "Downloading Version , {{VERSION}}"
+
+- name: Download Azure Artifacts
+  shell: az artifacts universal download --organization "https://dev.azure.com/DevOps-Batches/" --project "ce99914a-0f7d-4c46-9ccc-e4d025115ea9" --scope project --feed "devopsb51" --name "{{COMPONENT}}" --version "{{VERSION}}" --path "{{ARTIFACT_PATH}}"

@@ -1,0 +1,54 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - {{ LOG_FILE }}
+{% if IS_STRUCTURED %}
+    json.keys_under_root: true
+    json.message_key: msg
+{% endif %}
+    fields:
+      appName: {{APPNAME}}
+{% if APPNAME == 'shipping' %}
+    #multiline.pattern: "^[A-Z][a-z][a-z]\ [0-9][0-9]"
+    #multiline.negate: true
+    #multiline.match: after
+{% endif %}
+{% if 'nodejs' == EXCLUDE_LINES %}
+    exclude_lines: ['DeprecationWarning','instana/collector']
+{% elif 'payment' == EXCLUDE_LINES %}
+    inlcude_lines: ["^.[0-9][0-9][0-9][0-9]"]
+    exclude_lines: []
+{% elif 'shipping' == EXCLUDE_LINES %}
+    include_lines: ["^.qtp"]
+    exclude_lines: ["Query select uuid"]
+{% elif 'nginx' == EXCLUDE_LINES %}
+    exclude_lines: []
+{% endif %}
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 1
+
+{% if IS_STRUCTURED %}
+setup.template:
+  name: '{{APPNAME}}'
+  pattern: '{{APPNAME}}-*'
+  enabled: false
+setup.ilm.enabled: false
+output.elasticsearch:
+  hosts: ["elasticsearch-{{ENV}}.devopsb51.tk:9200"]
+  index: "{{APPNAME}}-%{+yyyy.MM.dd}"
+{% else %}
+output.logstash:
+  hosts: ["logstash-{{ENV}}.devopsb51.tk:5044"]
+{% endif %}
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~

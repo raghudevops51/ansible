@@ -1,0 +1,109 @@
+{
+  "IamFleetRole": "arn:aws:iam::973714476881:role/aws-ec2-spot-fleet-tagging-role",
+  "AllocationStrategy": "lowestPrice",
+  "TargetCapacity": 1,
+  "ValidFrom": "2020-09-24T02:36:02Z",
+  "ValidUntil": "2021-09-24T02:36:02Z",
+  "SpotPrice": "0.0832",
+  "TerminateInstancesWithExpiration": true,
+  "LaunchSpecifications": [
+    {
+      "ImageId": "ami-0ed9d2e6b42fd9de7",
+      "InstanceType": "t3.medium",
+      "SubnetId": "subnet-dcf4e1b5, subnet-29d59f52, subnet-904adcdd",
+      "KeyName": "devops",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "SnapshotId": "snap-04bbde31d14c12f02",
+            "VolumeSize": 16,
+            "VolumeType": "gp2",
+            "Encrypted": false
+          }
+        },
+        {
+          "DeviceName": "/dev/xvdb",
+          "VirtualName": "ephemeral0"
+        },
+        {
+          "DeviceName": "/dev/xvdc",
+          "VirtualName": "ephemeral1"
+        }
+      ],
+      "SpotPrice": "0.0416",
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-03fc84f43224f1381"
+        }
+      ],
+      "TagSpecifications": [
+        {
+          "ResourceType": "instance",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "frontend"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ImageId": "ami-0ed9d2e6b42fd9de7",
+      "InstanceType": "t3.large",
+      "SubnetId": "subnet-dcf4e1b5, subnet-29d59f52, subnet-904adcdd",
+      "KeyName": "devops",
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "SnapshotId": "snap-04bbde31d14c12f02",
+            "VolumeSize": 16,
+            "VolumeType": "gp2",
+            "Encrypted": false
+          }
+        },
+        {
+          "DeviceName": "/dev/xvdb",
+          "VirtualName": "ephemeral0"
+        },
+        {
+          "DeviceName": "/dev/xvdc",
+          "VirtualName": "ephemeral1"
+        }
+      ],
+      "SpotPrice": "0.0832",
+      "SecurityGroups": [
+        {
+          "GroupId": "sg-03fc84f43224f1381"
+        }
+      ],
+      "TagSpecifications": [
+        {
+          "ResourceType": "instance",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "frontend"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Type": "request",
+  "TagSpecifications": [
+    {
+      "ResourceType": "spot-fleet-request",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "frontend"
+        }
+      ]
+    }
+  ]
+}

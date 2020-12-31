@@ -1,0 +1,7 @@
+- name: Sample Play
+  hosts: all
+  tasks:
+    - name: Printing Hello World
+      debug:
+        msg: Hello World
+        

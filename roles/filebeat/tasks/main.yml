@@ -1,0 +1,17 @@
+- name: Install Filebet RPM
+  yum:
+    name: https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-x86_64.rpm
+    state: present
+
+- name: Copy Filebeat Template to /etc/filebeat/filebeat.yml
+  template:
+    src: filebeat.yml
+    dest: /etc/filebeat/filebeat.yml
+
+- name: Start Service of Filebeat
+  systemd:
+    name: filebeat
+    state: restarted
+    enabled: yes
+
+

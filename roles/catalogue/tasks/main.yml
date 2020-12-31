@@ -1,0 +1,34 @@
+- name: Include Steps for NodeJS
+  include_role:
+    name: common
+    tasks_from: nodejs
+
+- name: Include Steps for Rsyslog
+  include_role:
+    name: common
+    tasks_from: rsyslog
+
+- name: Setup Catalogue Service
+  template:
+    src: catalogue.service
+    dest: /etc/systemd/system/catalogue.service
+
+- name: Start Catalogue Service
+  systemd:
+    name: catalogue
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Include Prometheus Role
+  include_role:
+    name: prometheus
+
+- name: Include Filebeat Role
+  include_role:
+    name: filebeat
+  vars:
+    LOG_FILE: /var/log/catalogue.log
+    EXCLUDE_LINES: nodejs
+    IS_STRUCTURED: true
+    APPNAME: catalogue

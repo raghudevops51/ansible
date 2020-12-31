@@ -1,0 +1,4 @@
+COMPONENT: "shipping"
+ARTIFACT_PATH: /home/roboshop/{{COMPONENT}}
+CART_ENDPOINT: cart.devopsb51.tk:8000
+DB_HOST: mysql.devopsb51.tk

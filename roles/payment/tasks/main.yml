@@ -1,0 +1,35 @@
+- name: Include Steps for Python
+  include_role:
+    name: common
+    tasks_from: python
+
+- name: Include Steps for Rsyslog
+  include_role:
+    name: common
+    tasks_from: rsyslog
+
+
+- name: Setup Payment Service
+  template:
+    src: payment.service
+    dest: /etc/systemd/system/payment.service
+
+- name: Start Payment Service
+  systemd:
+    name: payment
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: Include Prometheus Role
+  include_role:
+    name: prometheus
+
+- name: Include Filebeat Role
+  include_role:
+    name: filebeat
+  vars:
+    LOG_FILE: /var/log/payment.log
+    EXCLUDE_LINES: payment
+    IS_STRUCTURED: false
+    APPNAME: payment
